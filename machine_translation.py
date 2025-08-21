@@ -2,7 +2,7 @@ import streamlit as st
 import torch
 from transformers import M2M100ForConditionalGeneration, M2M100Tokenizer
 
-# Check device --> Model nặng (CPU) hay nhẹ (CUDA / GPU)
+# Check device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Download model and tokenizer
@@ -19,17 +19,17 @@ def translate(sentence, tokenizer, model, source_lang, target_lang):
     # Encode input
     encoded = tokenizer(sentence, return_tensors = "pt").to(device)
 
-    # Take ID token of target lang --> ép model sinh ra ngôn ngữ đó
+    # Take ID token of target lang
     forced_bos_token_id = tokenizer.get_lang_id(target_lang)
 
-    # Generate với forced_bos_token_id (= translate)
+    # Generate
     generated_ids = model.generate(
         **encoded,
         forced_bos_token_id = forced_bos_token_id,
         max_length=128
     )
 
-    # Decode = mã hoá từ số sang chữ
+    # Decode
     translated_text = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
     return translated_text
 
@@ -38,7 +38,6 @@ def main():
     st.header('Multilingual Machine Translation')
     st.write('Model: M2M100. Supports over 100 languages')
 
-    # câu cần check
     sentence = st.text_input("Enter text to translate: ")
 
     # Mapping languages
